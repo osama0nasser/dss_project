@@ -28,7 +28,7 @@ public class DSSMainFrame extends JFrame {
 
     // Table models
     private DefaultTableModel productModel = new DefaultTableModel(
-            new String[]{"ID", "Name", "Price (€)", "Cost (€)", "Demand", "Profit (€)", "Margin"}, 0) {
+            new String[] { "ID", "Name", "Price (€)", "Cost (€)", "Demand", "Profit (€)", "Margin" }, 0) {
         @Override
         public boolean isCellEditable(int row, int column) {
             return column >= 1 && column <= 4; // allow edit Name, Price, Cost, Demand
@@ -36,7 +36,7 @@ public class DSSMainFrame extends JFrame {
     };
     private JTable productTable = new JTable(productModel);
     private DefaultTableModel scenarioModel = new DefaultTableModel(
-            new String[]{"ID", "Name", "Price Change", "Cost Change", "Demand Change", "Profit Impact"}, 0) {
+            new String[] { "ID", "Name", "Price Change", "Cost Change", "Demand Change", "Profit Impact" }, 0) {
         @Override
         public boolean isCellEditable(int row, int column) {
             return column == 1; // only scenario name editable
@@ -75,8 +75,8 @@ public class DSSMainFrame extends JFrame {
 
     public DSSMainFrame() {
         initUI();
-        refreshProductsFromDB();   // load products from database
-        refreshScenariosFromDB();  // load scenarios from database
+        refreshProductsFromDB(); // load products from database
+        refreshScenariosFromDB(); // load scenarios from database
         updateProductStats();
     }
 
@@ -111,22 +111,26 @@ public class DSSMainFrame extends JFrame {
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        gbc.gridx = 0; gbc.gridy = 0;
+        gbc.gridx = 0;
+        gbc.gridy = 0;
         inputPanel.add(new JLabel("Product Name:"), gbc);
         gbc.gridx = 1;
         inputPanel.add(pName, gbc);
 
-        gbc.gridx = 0; gbc.gridy = 1;
+        gbc.gridx = 0;
+        gbc.gridy = 1;
         inputPanel.add(new JLabel("Price (€):"), gbc);
         gbc.gridx = 1;
         inputPanel.add(pPrice, gbc);
 
-        gbc.gridx = 0; gbc.gridy = 2;
+        gbc.gridx = 0;
+        gbc.gridy = 2;
         inputPanel.add(new JLabel("Cost (€):"), gbc);
         gbc.gridx = 1;
         inputPanel.add(pCost, gbc);
 
-        gbc.gridx = 0; gbc.gridy = 3;
+        gbc.gridx = 0;
+        gbc.gridy = 3;
         inputPanel.add(new JLabel("Demand (units):"), gbc);
         gbc.gridx = 1;
         inputPanel.add(pDemand, gbc);
@@ -142,7 +146,8 @@ public class DSSMainFrame extends JFrame {
         updateProductBtn.addActionListener(e -> updateProduct());
         deleteProductBtn.addActionListener(e -> deleteProduct());
 
-        gbc.gridx = 0; gbc.gridy = 4;
+        gbc.gridx = 0;
+        gbc.gridy = 4;
         gbc.gridwidth = 2;
         inputPanel.add(buttonPanel, gbc);
         productPanel.add(inputPanel, BorderLayout.NORTH);
@@ -188,33 +193,38 @@ public class DSSMainFrame extends JFrame {
         sgbc.insets = new Insets(5, 5, 5, 5);
         sgbc.fill = GridBagConstraints.HORIZONTAL;
 
-        sgbc.gridx = 0; sgbc.gridy = 0;
+        sgbc.gridx = 0;
+        sgbc.gridy = 0;
         scenarioInputPanel.add(new JLabel("Scenario Name:"), sgbc);
         sgbc.gridx = 1;
         scenarioInputPanel.add(sName, sgbc);
 
-        sgbc.gridx = 0; sgbc.gridy = 1;
+        sgbc.gridx = 0;
+        sgbc.gridy = 1;
         scenarioInputPanel.add(new JLabel("Price Change (%):"), sgbc);
         sgbc.gridx = 1;
         scenarioInputPanel.add(sPrice, sgbc);
 
-        sgbc.gridx = 0; sgbc.gridy = 2;
+        sgbc.gridx = 0;
+        sgbc.gridy = 2;
         scenarioInputPanel.add(new JLabel("Cost Change (%):"), sgbc);
         sgbc.gridx = 1;
         sCostSpinner = new JSpinner(new SpinnerNumberModel(0, -100, 100, 5));
         scenarioInputPanel.add(sCostSpinner, sgbc);
 
-        sgbc.gridx = 0; sgbc.gridy = 3;
+        sgbc.gridx = 0;
+        sgbc.gridy = 3;
         scenarioInputPanel.add(new JLabel("Demand Change (%):"), sgbc);
         sgbc.gridx = 1;
         scenarioInputPanel.add(sDemand, sgbc);
 
         JPanel scenarioButtonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JButton addScenarioBtn = new JButton("Add Scenario");
-        JButton deleteSelectedScenariosBtn = new JButton("Delete Selected");  // renamed & changed action
+        JButton deleteSelectedScenariosBtn = new JButton("Delete Selected"); // renamed & changed action
         scenarioButtonPanel.add(addScenarioBtn);
         scenarioButtonPanel.add(deleteSelectedScenariosBtn);
-        sgbc.gridx = 0; sgbc.gridy = 4;
+        sgbc.gridx = 0;
+        sgbc.gridy = 4;
         sgbc.gridwidth = 2;
         scenarioInputPanel.add(scenarioButtonPanel, sgbc);
 
@@ -225,13 +235,13 @@ public class DSSMainFrame extends JFrame {
         scenarioPanel.add(scenarioScroll, BorderLayout.CENTER);
 
         addScenarioBtn.addActionListener(e -> addScenario());
-        deleteSelectedScenariosBtn.addActionListener(e -> deleteSelectedScenarios());  // new action
+        deleteSelectedScenariosBtn.addActionListener(e -> deleteSelectedScenarios()); // new action
 
         // ================= RESULTS TAB =================
         JPanel resultPanel = new JPanel(new BorderLayout(10, 10));
         resultPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        resultsModel = new DefaultTableModel(new String[]{"Scenario", "Profit (€)", "Change (%)", "Risk"}, 0);
+        resultsModel = new DefaultTableModel(new String[] { "Scenario", "Profit (€)", "Change (%)", "Risk" }, 0);
         JTable resultsTable = new JTable(resultsModel);
         analysisProgress = new JProgressBar();
         analysisProgress.setStringPainted(true);
@@ -264,7 +274,8 @@ public class DSSMainFrame extends JFrame {
         // ================= COMPARE TAB =================
         comparePanel = new JPanel(new BorderLayout(10, 10));
         comparePanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        comparePanel.add(new JLabel("Select two scenarios from the table and click 'Compare'", SwingConstants.CENTER), BorderLayout.NORTH);
+        comparePanel.add(new JLabel("Select two scenarios from the table and click 'Compare'", SwingConstants.CENTER),
+                BorderLayout.NORTH);
         JTextArea compareArea = new JTextArea();
         compareArea.setEditable(false);
         compareArea.setFont(new Font("Monospaced", Font.PLAIN, 12));
@@ -350,14 +361,14 @@ public class DSSMainFrame extends JFrame {
         productModel.setRowCount(0);
         List<Product> products = DatabaseManager.getInstance().loadProducts();
         for (Product p : products) {
-            productModel.addRow(new Object[]{
-                p.getId(),
-                p.getName(),
-                p.getPrice(),
-                p.getCost(),
-                p.getDemand(),
-                currencyFormat.format(p.getProfit()),
-                String.format("%.2f%%", p.getMargin())
+            productModel.addRow(new Object[] {
+                    p.getId(),
+                    p.getName(),
+                    p.getPrice(),
+                    p.getCost(),
+                    p.getDemand(),
+                    currencyFormat.format(p.getProfit()),
+                    String.format("%.2f%%", p.getMargin())
             });
         }
         updateProductStats();
@@ -370,13 +381,13 @@ public class DSSMainFrame extends JFrame {
         for (Scenario s : scenarioList) {
             scenarios.add(s);
             double impact = (s.getPriceChange() - s.getCostChange() + s.getDemandChange()) / 2.0;
-            scenarioModel.addRow(new Object[]{
-                s.getId(),
-                s.getName(),
-                String.format("%+.1f%%", s.getPriceChange()),
-                String.format("%+.1f%%", s.getCostChange()),
-                String.format("%+.1f%%", s.getDemandChange()),
-                String.format("%+.1f%%", impact)
+            scenarioModel.addRow(new Object[] {
+                    s.getId(),
+                    s.getName(),
+                    String.format("%+.1f%%", s.getPriceChange()),
+                    String.format("%+.1f%%", s.getCostChange()),
+                    String.format("%+.1f%%", s.getDemandChange()),
+                    String.format("%+.1f%%", impact)
             });
         }
     }
@@ -404,7 +415,8 @@ public class DSSMainFrame extends JFrame {
                     bestProfit = profit;
                     bestName = productModel.getValueAt(i, 1).toString();
                 }
-            } catch (Exception e) {}
+            } catch (Exception e) {
+            }
         }
         totalProfitLabel.setText("Total Profit: " + currencyFormat.format(totalProfit));
         avgMarginLabel.setText(String.format("Avg Margin: %.2f%%", totalMargin / productModel.getRowCount()));
@@ -414,7 +426,8 @@ public class DSSMainFrame extends JFrame {
     private void addProduct() {
         try {
             String name = pName.getText().trim();
-            if (name.isEmpty()) throw new Exception();
+            if (name.isEmpty())
+                throw new Exception();
             double price = Double.parseDouble(pPrice.getText().trim());
             double cost = Double.parseDouble(pCost.getText().trim());
             int demand = Integer.parseInt(pDemand.getText().trim());
@@ -436,16 +449,17 @@ public class DSSMainFrame extends JFrame {
         try {
             int id = (int) productModel.getValueAt(row, 0);
             String name = pName.getText().trim();
-            if (name.isEmpty()) name = (String) productModel.getValueAt(row, 1);
-            double price = pPrice.getText().trim().isEmpty() ?
-                Double.parseDouble(productModel.getValueAt(row, 2).toString()) :
-                Double.parseDouble(pPrice.getText().trim());
-            double cost = pCost.getText().trim().isEmpty() ?
-                Double.parseDouble(productModel.getValueAt(row, 3).toString()) :
-                Double.parseDouble(pCost.getText().trim());
-            int demand = pDemand.getText().trim().isEmpty() ?
-                Integer.parseInt(productModel.getValueAt(row, 4).toString()) :
-                Integer.parseInt(pDemand.getText().trim());
+            if (name.isEmpty())
+                name = (String) productModel.getValueAt(row, 1);
+            double price = pPrice.getText().trim().isEmpty()
+                    ? Double.parseDouble(productModel.getValueAt(row, 2).toString())
+                    : Double.parseDouble(pPrice.getText().trim());
+            double cost = pCost.getText().trim().isEmpty()
+                    ? Double.parseDouble(productModel.getValueAt(row, 3).toString())
+                    : Double.parseDouble(pCost.getText().trim());
+            int demand = pDemand.getText().trim().isEmpty()
+                    ? Integer.parseInt(productModel.getValueAt(row, 4).toString())
+                    : Integer.parseInt(pDemand.getText().trim());
             Product product = new Product(id, name, price, cost, demand);
             DatabaseManager.getInstance().updateProduct(product);
             refreshProductsFromDB();
@@ -461,7 +475,8 @@ public class DSSMainFrame extends JFrame {
             JOptionPane.showMessageDialog(this, "Select a product to delete.");
             return;
         }
-        int confirm = JOptionPane.showConfirmDialog(this, "Delete selected product?", "Confirm", JOptionPane.YES_NO_OPTION);
+        int confirm = JOptionPane.showConfirmDialog(this, "Delete selected product?", "Confirm",
+                JOptionPane.YES_NO_OPTION);
         if (confirm == JOptionPane.YES_OPTION) {
             int id = (int) productModel.getValueAt(row, 0);
             DatabaseManager.getInstance().deleteProduct(id);
@@ -521,18 +536,21 @@ public class DSSMainFrame extends JFrame {
     private void compareScenarios(JTextArea compareArea) {
         int[] selectedRows = scenarioTable.getSelectedRows();
         if (selectedRows.length < 2) {
-            JOptionPane.showMessageDialog(this, "Please select at least two scenarios from the Scenarios tab.", "Compare", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Please select at least two scenarios from the Scenarios tab.",
+                    "Compare", JOptionPane.INFORMATION_MESSAGE);
             return;
         }
         if (selectedRows.length > 2) {
-            JOptionPane.showMessageDialog(this, "Please select only two scenarios for side‑by‑side comparison.", "Compare", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Please select only two scenarios for side‑by‑side comparison.",
+                    "Compare", JOptionPane.INFORMATION_MESSAGE);
             return;
         }
         Scenario s1 = scenarios.get(selectedRows[0]);
         Scenario s2 = scenarios.get(selectedRows[1]);
 
         int prodRow = productTable.getSelectedRow();
-        if (prodRow < 0 && productModel.getRowCount() > 0) prodRow = 0;
+        if (prodRow < 0 && productModel.getRowCount() > 0)
+            prodRow = 0;
         if (prodRow < 0) {
             JOptionPane.showMessageDialog(this, "No product available. Please add a product first.");
             return;
@@ -556,21 +574,30 @@ public class DSSMainFrame extends JFrame {
         sb.append("Product: ").append(prodName).append("\n\n");
         sb.append(String.format("%-20s %-30s %-30s\n", "Metric", s1.getName(), s2.getName()));
         sb.append("--------------------------------------------------------------------------------\n");
-        sb.append(String.format("%-20s %-30s %-30s\n", "Profit", currencyFormat.format(profit1), currencyFormat.format(profit2)));
-        sb.append(String.format("%-20s %-30s %-30s\n", "Change from Base", String.format("%+.1f%%", change1), String.format("%+.1f%%", change2)));
+        sb.append(String.format("%-20s %-30s %-30s\n", "Profit", currencyFormat.format(profit1),
+                currencyFormat.format(profit2)));
+        sb.append(String.format("%-20s %-30s %-30s\n", "Change from Base", String.format("%+.1f%%", change1),
+                String.format("%+.1f%%", change2)));
         sb.append(String.format("%-20s %-30s %-30s\n", "Risk Level", risk1, risk2));
-        sb.append(String.format("%-20s %-30s %-30s\n", "Price Change", String.format("%+.1f%%", s1.getPriceChange()), String.format("%+.1f%%", s2.getPriceChange())));
-        sb.append(String.format("%-20s %-30s %-30s\n", "Cost Change", String.format("%+.1f%%", s1.getCostChange()), String.format("%+.1f%%", s2.getCostChange())));
-        sb.append(String.format("%-20s %-30s %-30s\n", "Demand Change", String.format("%+.1f%%", s1.getDemandChange()), String.format("%+.1f%%", s2.getDemandChange())));
+        sb.append(String.format("%-20s %-30s %-30s\n", "Price Change", String.format("%+.1f%%", s1.getPriceChange()),
+                String.format("%+.1f%%", s2.getPriceChange())));
+        sb.append(String.format("%-20s %-30s %-30s\n", "Cost Change", String.format("%+.1f%%", s1.getCostChange()),
+                String.format("%+.1f%%", s2.getCostChange())));
+        sb.append(String.format("%-20s %-30s %-30s\n", "Demand Change", String.format("%+.1f%%", s1.getDemandChange()),
+                String.format("%+.1f%%", s2.getDemandChange())));
         sb.append("\n💡 Recommendation: ");
         if (profit1 > profit2) {
             sb.append("Scenario '").append(s1.getName()).append("' yields higher profit. ");
-            if (risk1.equals("Low") && risk2.equals("High")) sb.append("It is also much safer.");
-            else if (risk1.equals("High")) sb.append("But it carries higher risk – consider mitigating actions.");
+            if (risk1.equals("Low") && risk2.equals("High"))
+                sb.append("It is also much safer.");
+            else if (risk1.equals("High"))
+                sb.append("But it carries higher risk – consider mitigating actions.");
         } else {
             sb.append("Scenario '").append(s2.getName()).append("' yields higher profit. ");
-            if (risk2.equals("Low") && risk1.equals("High")) sb.append("It is also much safer.");
-            else if (risk2.equals("High")) sb.append("But it carries higher risk – consider mitigating actions.");
+            if (risk2.equals("Low") && risk1.equals("High"))
+                sb.append("It is also much safer.");
+            else if (risk2.equals("High"))
+                sb.append("But it carries higher risk – consider mitigating actions.");
         }
         compareArea.setText(sb.toString());
         tabs.setSelectedIndex(3);
@@ -613,15 +640,23 @@ public class DSSMainFrame extends JFrame {
                     Scenario s = scenarios.get(i);
                     double profit = engine.calculateScenarioProfit(currentProduct, s);
                     double change = ((profit - baseProfit) / baseProfit) * 100;
-                    String risk = profit < 50000 ? "High" : (profit < 150000 ? "Medium" : "Low");
-                    resultsModel.addRow(new Object[]{s.getName(),
-                        currencyFormat.format(profit),
-                        String.format("%+.1f%%", change),
-                        risk});
+                    double ratio = profit / baseProfit;
+                    String risk;
+                    if (ratio < 1.0) {
+                        risk = "High Risk";
+                    } else if (ratio <= 1.2) {
+                        risk = "Medium Risk";
+                    } else {
+                        risk = "Low Risk";
+                    }
+                    resultsModel.addRow(new Object[] { s.getName(),
+                            currencyFormat.format(profit),
+                            String.format("%+.1f%%", change),
+                            risk });
                     results.add(new ScenarioResult(s.getName(), profit));
                     if (best == null || profit > best.getProfit())
                         best = new ScenarioResult(s.getName(), profit);
-                    analysisProgress.setValue(40 + (int)((i+1) * 30.0 / scenarios.size()));
+                    analysisProgress.setValue(40 + (int) ((i + 1) * 30.0 / scenarios.size()));
                 }
 
                 analysisProgress.setValue(80);
@@ -647,31 +682,41 @@ public class DSSMainFrame extends JFrame {
                     if (bestScenario != null) {
                         double profitBest = best.getProfit();
                         if (profitBest > baseProfit) {
-                            recBuilder.append("✓ Profit improvement of ").append(String.format("%.1f%%", (profitBest - baseProfit) / baseProfit * 100)).append(" is achievable.\n");
+                            recBuilder.append("✓ Profit improvement of ")
+                                    .append(String.format("%.1f%%", (profitBest - baseProfit) / baseProfit * 100))
+                                    .append(" is achievable.\n");
                         } else {
                             recBuilder.append("⚠️ This scenario reduces profit. Consider revising.\n");
                         }
                         double priceEffect = bestScenario.getPriceChange();
                         double costEffect = -bestScenario.getCostChange();
                         double demandEffect = bestScenario.getDemandChange();
-                        double maxEffect = Math.max(Math.abs(priceEffect), Math.max(Math.abs(costEffect), Math.abs(demandEffect)));
+                        double maxEffect = Math.max(Math.abs(priceEffect),
+                                Math.max(Math.abs(costEffect), Math.abs(demandEffect)));
                         String mainDriver = "";
-                        if (Math.abs(priceEffect) == maxEffect) mainDriver = "price";
-                        else if (Math.abs(costEffect) == maxEffect) mainDriver = "cost";
-                        else mainDriver = "demand";
+                        if (Math.abs(priceEffect) == maxEffect)
+                            mainDriver = "price";
+                        else if (Math.abs(costEffect) == maxEffect)
+                            mainDriver = "cost";
+                        else
+                            mainDriver = "demand";
                         recBuilder.append("✓ The most influential factor is ").append(mainDriver)
-                                  .append(" (change of ").append(String.format("%+.1f%%", maxEffect)).append(").\n");
+                                .append(" (change of ").append(String.format("%+.1f%%", maxEffect)).append(").\n");
 
                         if (priceEffect > 0 && profitBest > baseProfit) {
-                            recBuilder.append("💰 Suggestion: Increase price by ").append(String.format("%.0f%%", priceEffect)).append(" to boost profit.\n");
+                            recBuilder.append("💰 Suggestion: Increase price by ")
+                                    .append(String.format("%.0f%%", priceEffect)).append(" to boost profit.\n");
                         } else if (priceEffect < 0 && profitBest > baseProfit) {
-                            recBuilder.append("💰 Suggestion: Lower price to drive demand – this scenario shows profit increase.\n");
+                            recBuilder.append(
+                                    "💰 Suggestion: Lower price to drive demand – this scenario shows profit increase.\n");
                         }
                         if (costEffect > 0 && profitBest > baseProfit) {
-                            recBuilder.append("🛠️ Reducing cost by ").append(String.format("%.0f%%", costEffect)).append(" improves profit.\n");
+                            recBuilder.append("🛠️ Reducing cost by ").append(String.format("%.0f%%", costEffect))
+                                    .append(" improves profit.\n");
                         }
                         if (demandEffect > 0 && profitBest > baseProfit) {
-                            recBuilder.append("📈 Increasing demand by ").append(String.format("%.0f%%", demandEffect)).append(" would be beneficial.\n");
+                            recBuilder.append("📈 Increasing demand by ").append(String.format("%.0f%%", demandEffect))
+                                    .append(" would be beneficial.\n");
                         }
                     }
                     if (overallRisk.equals("High")) {
@@ -681,7 +726,8 @@ public class DSSMainFrame extends JFrame {
                     } else {
                         recBuilder.append("\n✅ Low risk – safe to proceed with the best scenario.\n");
                     }
-                    recBuilder.append("\n✨ Recommendation: ").append(recommendationLabel.getText().replace("💡 Recommendation: ", ""));
+                    recBuilder.append("\n✨ Recommendation: ")
+                            .append(recommendationLabel.getText().replace("💡 Recommendation: ", ""));
                     recommendationTextArea.setText(recBuilder.toString());
                 }
 
@@ -689,6 +735,7 @@ public class DSSMainFrame extends JFrame {
                 Thread.sleep(300);
                 return null;
             }
+
             @Override
             protected void done() {
                 analysisProgress.setVisible(false);
@@ -700,16 +747,16 @@ public class DSSMainFrame extends JFrame {
 
     private void showHelp() {
         JOptionPane.showMessageDialog(this,
-            "Decision Support System Help\n\n" +
-            "1. Products Tab: Add, edit, delete products. Select a product.\n" +
-            "2. Scenarios Tab: Create what-if scenarios with % changes.\n" +
-            "   - Delete Selected: Delete only the scenarios you highlight.\n" +
-            "3. Results Tab: Run analysis, compare profits, see risk.\n" +
-            "4. Compare Scenarios: Select two scenarios (Ctrl+click) and click the toolbar button.\n" +
-            "5. Dark mode toggle available.\n" +
-            "6. Recommendation engine gives actionable advice.\n\n" +
-            "All data is automatically saved to an embedded H2 database (no manual save needed).",
-            "Help", JOptionPane.INFORMATION_MESSAGE);
+                "Decision Support System Help\n\n" +
+                        "1. Products Tab: Add, edit, delete products. Select a product.\n" +
+                        "2. Scenarios Tab: Create what-if scenarios with % changes.\n" +
+                        "   - Delete Selected: Delete only the scenarios you highlight.\n" +
+                        "3. Results Tab: Run analysis, compare profits, see risk.\n" +
+                        "4. Compare Scenarios: Select two scenarios (Ctrl+click) and click the toolbar button.\n" +
+                        "5. Dark mode toggle available.\n" +
+                        "6. Recommendation engine gives actionable advice.\n\n" +
+                        "All data is automatically saved to an embedded H2 database (no manual save needed).",
+                "Help", JOptionPane.INFORMATION_MESSAGE);
     }
 
     public static void main(String[] args) {
