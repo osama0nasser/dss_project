@@ -81,7 +81,7 @@ public class DSSMainFrame extends JFrame {
     }
 
     private void initUI() {
-        setTitle("Advanced Decision Support System - Business Analytics");
+        setTitle("Product Profit Scenario");
         setSize(1400, 850);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
