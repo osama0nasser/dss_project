@@ -2,7 +2,9 @@ package com.mycompany.dss.database;
 
 import com.mycompany.dss.model.Product;
 import com.mycompany.dss.model.Scenario;
+import com.mycompany.dss.model.ScenarioResultPersistent;
 import java.sql.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,8 +17,10 @@ public class DatabaseManager {
             String url = "jdbc:h2:~/dss_data;DB_CLOSE_DELAY=-1;AUTO_SERVER=TRUE";
             connection = DriverManager.getConnection(url, "sa", "");
             createTables();
-            if (getProductCount() == 0) insertSampleProducts();
-            if (getScenarioCount() == 0) insertSampleScenarios();
+            if (getProductCount() == 0)
+                insertSampleProducts();
+            if (getScenarioCount() == 0)
+                insertSampleScenarios();
         } catch (SQLException e) {
             e.printStackTrace();
             throw new RuntimeException("Failed to initialize database", e);
@@ -24,7 +28,8 @@ public class DatabaseManager {
     }
 
     public static DatabaseManager getInstance() {
-        if (instance == null) instance = new DatabaseManager();
+        if (instance == null)
+            instance = new DatabaseManager();
         return instance;
     }
 
@@ -37,22 +42,32 @@ public class DatabaseManager {
                 "id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255) NOT NULL, " +
                 "price_change DECIMAL(5,2) NOT NULL, cost_change DECIMAL(5,2) NOT NULL, " +
                 "demand_change DECIMAL(5,2) NOT NULL, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)";
+        String resultsTable = "CREATE TABLE IF NOT EXISTS scenario_results (" +
+                "id INT AUTO_INCREMENT PRIMARY KEY, " +
+                "product_id INT NOT NULL, product_name VARCHAR(255) NOT NULL, " +
+                "scenario_id INT NOT NULL, scenario_name VARCHAR(255) NOT NULL, " +
+                "analysis_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
+                "profit DECIMAL(15,2) NOT NULL, change_percent DECIMAL(8,2) NOT NULL, " +
+                "risk_level VARCHAR(20) NOT NULL, " +
+                "FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE, " +
+                "FOREIGN KEY (scenario_id) REFERENCES scenarios(id) ON DELETE CASCADE)";
         try (Statement stmt = connection.createStatement()) {
             stmt.execute(productsTable);
             stmt.execute(scenariosTable);
+            stmt.execute(resultsTable);
         }
     }
 
     private int getProductCount() throws SQLException {
         try (Statement stmt = connection.createStatement();
-             ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM products")) {
+                ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM products")) {
             return rs.next() ? rs.getInt(1) : 0;
         }
     }
 
     private int getScenarioCount() throws SQLException {
         try (Statement stmt = connection.createStatement();
-             ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM scenarios")) {
+                ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM scenarios")) {
             return rs.next() ? rs.getInt(1) : 0;
         }
     }
@@ -60,8 +75,8 @@ public class DatabaseManager {
     private void insertSampleProducts() throws SQLException {
         String sql = "INSERT INTO products (name, price, cost, demand) VALUES (?, ?, ?, ?)";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
-            Object[][] sample = {{"Laptop", 10000.0, 7000.0, 100}, {"Mouse", 500.0, 300.0, 500},
-                    {"Keyboard", 1500.0, 800.0, 200}, {"Mobile", 500.0, 300.0, 50}};
+            Object[][] sample = { { "Laptop", 10000.0, 7000.0, 100 }, { "Mouse", 500.0, 300.0, 500 },
+                    { "Keyboard", 1500.0, 800.0, 200 }, { "Mobile", 500.0, 300.0, 50 } };
             for (Object[] row : sample) {
                 ps.setString(1, (String) row[0]);
                 ps.setDouble(2, (double) row[1]);
@@ -76,7 +91,8 @@ public class DatabaseManager {
     private void insertSampleScenarios() throws SQLException {
         String sql = "INSERT INTO scenarios (name, price_change, cost_change, demand_change) VALUES (?, ?, ?, ?)";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
-            Object[][] sample = {{"Optimistic", 10.0, -5.0, 20.0}, {"Pessimistic", -15.0, 10.0, -20.0}, {"Moderate", 5.0, 0.0, 5.0}};
+            Object[][] sample = { { "Optimistic", 10.0, -5.0, 20.0 }, { "Pessimistic", -15.0, 10.0, -20.0 },
+                    { "Moderate", 5.0, 0.0, 5.0 } };
             for (Object[] row : sample) {
                 ps.setString(1, (String) row[0]);
                 ps.setDouble(2, (double) row[1]);
@@ -88,79 +104,155 @@ public class DatabaseManager {
         }
     }
 
+    // Product CRUD (unchanged, but I include for completeness)
     public List<Product> loadProducts() {
         List<Product> list = new ArrayList<>();
         try (Statement stmt = connection.createStatement();
-             ResultSet rs = stmt.executeQuery("SELECT id, name, price, cost, demand FROM products ORDER BY id")) {
+                ResultSet rs = stmt.executeQuery("SELECT id, name, price, cost, demand FROM products ORDER BY id")) {
             while (rs.next()) {
                 list.add(new Product(rs.getInt("id"), rs.getString("name"),
                         rs.getDouble("price"), rs.getDouble("cost"), rs.getInt("demand")));
             }
-        } catch (SQLException e) { e.printStackTrace(); }
-        return list;
-    }
-
-    public List<Scenario> loadScenarios() {
-        List<Scenario> list = new ArrayList<>();
-        try (Statement stmt = connection.createStatement();
-             ResultSet rs = stmt.executeQuery("SELECT id, name, price_change, cost_change, demand_change FROM scenarios ORDER BY id")) {
-            while (rs.next()) {
-                list.add(new Scenario(rs.getInt("id"), rs.getString("name"),
-                        rs.getDouble("price_change"), rs.getDouble("cost_change"), rs.getDouble("demand_change")));
-            }
-        } catch (SQLException e) { e.printStackTrace(); }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return list;
     }
 
     public void insertProduct(Product p) {
         String sql = "INSERT INTO products (name, price, cost, demand) VALUES (?, ?, ?, ?)";
         try (PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            ps.setString(1, p.getName()); ps.setDouble(2, p.getPrice());
-            ps.setDouble(3, p.getCost()); ps.setInt(4, p.getDemand());
+            ps.setString(1, p.getName());
+            ps.setDouble(2, p.getPrice());
+            ps.setDouble(3, p.getCost());
+            ps.setInt(4, p.getDemand());
             ps.executeUpdate();
             ResultSet keys = ps.getGeneratedKeys();
-            if (keys.next()) p.setId(keys.getInt(1));
-        } catch (SQLException e) { e.printStackTrace(); }
+            if (keys.next())
+                p.setId(keys.getInt(1));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public void updateProduct(Product p) {
         String sql = "UPDATE products SET name=?, price=?, cost=?, demand=? WHERE id=?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
-            ps.setString(1, p.getName()); ps.setDouble(2, p.getPrice());
-            ps.setDouble(3, p.getCost()); ps.setInt(4, p.getDemand()); ps.setInt(5, p.getId());
+            ps.setString(1, p.getName());
+            ps.setDouble(2, p.getPrice());
+            ps.setDouble(3, p.getCost());
+            ps.setInt(4, p.getDemand());
+            ps.setInt(5, p.getId());
             ps.executeUpdate();
-        } catch (SQLException e) { e.printStackTrace(); }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public void deleteProduct(int id) {
         try (PreparedStatement ps = connection.prepareStatement("DELETE FROM products WHERE id=?")) {
-            ps.setInt(1, id); ps.executeUpdate();
-        } catch (SQLException e) { e.printStackTrace(); }
+            ps.setInt(1, id);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Scenario CRUD
+    public List<Scenario> loadScenarios() {
+        List<Scenario> list = new ArrayList<>();
+        try (Statement stmt = connection.createStatement();
+                ResultSet rs = stmt.executeQuery(
+                        "SELECT id, name, price_change, cost_change, demand_change FROM scenarios ORDER BY id")) {
+            while (rs.next()) {
+                list.add(new Scenario(rs.getInt("id"), rs.getString("name"),
+                        rs.getDouble("price_change"), rs.getDouble("cost_change"), rs.getDouble("demand_change")));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
     }
 
     public void insertScenario(Scenario s) {
         String sql = "INSERT INTO scenarios (name, price_change, cost_change, demand_change) VALUES (?, ?, ?, ?)";
         try (PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            ps.setString(1, s.getName()); ps.setDouble(2, s.getPriceChange());
-            ps.setDouble(3, s.getCostChange()); ps.setDouble(4, s.getDemandChange());
+            ps.setString(1, s.getName());
+            ps.setDouble(2, s.getPriceChange());
+            ps.setDouble(3, s.getCostChange());
+            ps.setDouble(4, s.getDemandChange());
             ps.executeUpdate();
             ResultSet keys = ps.getGeneratedKeys();
-            if (keys.next()) s.setId(keys.getInt(1));
-        } catch (SQLException e) { e.printStackTrace(); }
+            if (keys.next())
+                s.setId(keys.getInt(1));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public void updateScenario(Scenario s) {
         String sql = "UPDATE scenarios SET name=?, price_change=?, cost_change=?, demand_change=? WHERE id=?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
-            ps.setString(1, s.getName()); ps.setDouble(2, s.getPriceChange());
-            ps.setDouble(3, s.getCostChange()); ps.setDouble(4, s.getDemandChange()); ps.setInt(5, s.getId());
+            ps.setString(1, s.getName());
+            ps.setDouble(2, s.getPriceChange());
+            ps.setDouble(3, s.getCostChange());
+            ps.setDouble(4, s.getDemandChange());
+            ps.setInt(5, s.getId());
             ps.executeUpdate();
-        } catch (SQLException e) { e.printStackTrace(); }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public void deleteScenario(int id) {
         try (PreparedStatement ps = connection.prepareStatement("DELETE FROM scenarios WHERE id=?")) {
-            ps.setInt(1, id); ps.executeUpdate();
-        } catch (SQLException e) { e.printStackTrace(); }
+            ps.setInt(1, id);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // ================= NEW: Scenario Results persistence =================
+    public void insertScenarioResult(ScenarioResultPersistent result) {
+        String sql = "INSERT INTO scenario_results (product_id, product_name, scenario_id, scenario_name, " +
+                "analysis_date, profit, change_percent, risk_level) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, result.getProductId());
+            ps.setString(2, result.getProductName());
+            ps.setInt(3, result.getScenarioId());
+            ps.setString(4, result.getScenarioName());
+            ps.setTimestamp(5, Timestamp.valueOf(result.getAnalysisDate()));
+            ps.setDouble(6, result.getProfit());
+            ps.setDouble(7, result.getChangePercent());
+            ps.setString(8, result.getRiskLevel());
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public List<ScenarioResultPersistent> loadAllScenarioResults() {
+        List<ScenarioResultPersistent> list = new ArrayList<>();
+        String sql = "SELECT id, product_id, product_name, scenario_id, scenario_name, " +
+                "analysis_date, profit, change_percent, risk_level FROM scenario_results ORDER BY analysis_date DESC";
+        try (Statement stmt = connection.createStatement();
+                ResultSet rs = stmt.executeQuery(sql)) {
+            while (rs.next()) {
+                list.add(new ScenarioResultPersistent(
+                        rs.getInt("id"),
+                        rs.getInt("product_id"),
+                        rs.getString("product_name"),
+                        rs.getInt("scenario_id"),
+                        rs.getString("scenario_name"),
+                        rs.getTimestamp("analysis_date").toLocalDateTime(),
+                        rs.getDouble("profit"),
+                        rs.getDouble("change_percent"),
+                        rs.getString("risk_level")));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
     }
 }
